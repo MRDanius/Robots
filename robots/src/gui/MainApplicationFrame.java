@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.*;
 
 import log.Logger;
@@ -18,6 +17,8 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    private LogWindow logWindow;
+    private GameWindow gameWindow;
 
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -31,12 +32,16 @@ public class MainApplicationFrame extends JFrame
         setContentPane(desktopPane);
 
 
-        LogWindow logWindow = createLogWindow();
+        logWindow = createLogWindow();
+        logWindow.setName("logWindow");
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        gameWindow = new GameWindow();
+        gameWindow.setName("gameWindow");
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
+
+        ConfigManager.loadState(new JInternalFrame[]{logWindow, gameWindow});
 
         setJMenuBar(MenuCreater.create(this));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -113,6 +118,8 @@ public class MainApplicationFrame extends JFrame
         //package private сознательно(Для MenuCreater)
         void exitApplication()
         {
+            ConfigManager.saveState(new JInternalFrame[]{logWindow, gameWindow});
+
             Object[] options = {"Нет", "Да"};
 
             JOptionPane pane = new JOptionPane(
